@@ -13,7 +13,7 @@ json1_file = open('fhir/'+f[chosen_file])
 json1_str = json1_file.read()
 json1_data = json.loads(json1_str)
 
-data = json1_data['entry']
+# data = json1_data['entry']
 
 #a = patient_data(f[0])
 def patient_data(name):
@@ -29,10 +29,20 @@ def patient_data(name):
     g_dets = {}
     dets = ['birthDate', 'id', 'gender']
     general_dets = data[1]['resource']
-    g_dets['State'] = general_dets['address'][0]['state']
-    g_dets['City'] = general_dets['address'][0]['city']
+    if 'address' in general_dets:
+        if 'state' in general_dets['address'][0]:
+            g_dets['State'] = general_dets['address'][0]['state']
+        else:
+            g_dets['State'] = ''
+        if 'City' in general_dets['address'][0]:
+            g_dets['City'] = general_dets['address'][0]['city']
+        else:
+            g_dets['City'] = ''
     for key in dets:
-        g_dets[key] = general_dets[key]
+        if key in general_dets:
+            g_dets[key] = general_dets[key]
+        else:
+            g_dets[key] = ''
     
     for i in range(len(data)):
     #    print(data[i]['resource']['resourceType'])
@@ -72,8 +82,8 @@ def patient_data(name):
 
 def convert(date):#2009-07-27T06:47:32-04:00
     yr = int(date[0:4])
-    m = int(date[5:7])
-    d = int(date[8:10])
+    m  = int(date[5:7])
+    d  = int(date[8:10])
     return yr + m/12 + (d/30)/12
     
 def simplify_obs(obs):
@@ -96,8 +106,8 @@ def simplify_obs(obs):
 
 patients = []
 
-#for name in f:
-for i in range(600):
+for i in range(len(f)):
+    print(f[i])
     new_dict, obs, conditions = patient_data(f[i])
 #    new_dict, obs, conditions = patient_data(name)
     obs_simplified = simplify_obs(obs)
@@ -109,10 +119,12 @@ for i in range(600):
         else:
             for i in range(len(obs_simplified[key])):
                 new_dict[key+stat[i]] = obs_simplified[key][i]
-    for i in range(len(conditions)):
-        new_dict['Condition '+str(i)] = conditions[i][1]
-        new_dict['Condition Date '+str(i)] = conditions[i][0]
-        patients.append(new_dict)
+    new_dict['Conditions'] = conditions
+    patients.append(new_dict)
+#    for i in range(len(conditions)):
+#        new_dict['Condition '+str(i)] = conditions[i][1]
+#        new_dict['Condition Date '+str(i)] = conditions[i][0]
+#    patients.append(new_dict)
         
 with open('patients.json', 'w') as outfile:
     json.dump(patients, outfile)
@@ -125,23 +137,3 @@ def age(d1, d2):
     age = yr2 - yr1
     m = m2 - m1
     return abs(age + m/12)
-
-
-#print(f[0])
-
-#
-#num_patients = 10
-#data = []
-#
-#for i in range(num_patients):
-#
-#    data.append( extract_data( i ) )
-#
-#
-##print(data)
-#
-#
-#
-#
-#
-#
