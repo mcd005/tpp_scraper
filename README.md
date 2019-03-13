@@ -5,7 +5,7 @@ The 'tpp.py' program goes through the JSON files in the given fake hospital pati
 The 'analysis.py' file guides you through how to build datasets, visualise and export to csv. 
 
 # Instructions:
-- Extract 'fhir.z' into the diectory with the files tpp.py and analysis.py
+- Extract 'fhir.7z' into the diectory with the files tpp.py and analysis.py
 - From terminal run 'python tpp.py', this extracts all the features specified in the file into a more useable format (described above).
 - Perform analysis:
   - Run 'python analysis.py', this walks you through how to use the interface.
