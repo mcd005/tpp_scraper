@@ -79,27 +79,34 @@ def plot(xss, yss, x_label, y_label, conditions):
     ax.legend(loc='upper right', fancybox=True, shadow=True)
     plt.xlabel(x_label)
     plt.ylabel(y_label)
-    plt.plot()
-    plt.show()
+    # plt.plot()
+    # plt.show()
 
 
 def export_dataset(xss, yss, x_label, y_label, cnds, name):
     lengths = [len(xs) for xs in xss]
-    X = []
+    X = [[x_label, y_label] + cnds]
     for i in range(len(lengths)):
         for j in range(lengths[i]):
-            xs = [yss[i][j], 1, xss[i][j]]
+            xs = [yss[i][j], xss[i][j]]
             for k in range(len(cnds)):
                 if k == i:
                     xs.append(1)
                 else:
                     xs.append(0)
             X.append(xs)
-    with open(name+'.csv', 'w') as csvFile:
+    with open('Datasets/'+name+'.csv', 'w') as csvFile:
         writer = csv.writer(csvFile)
         writer.writerows(X)
-
+    plt.savefig('Datasets/Plot-'+name+'.png', dpi=500)
     csvFile.close()
+
+
+
+"""only needs to be done once! (redone if patient.json changes)"""
+f, c = make_options()
+write_all_options(f, c)
+
 
 def example():
     x_label = 'Body Mass Index Average'
@@ -107,19 +114,12 @@ def example():
     conditions = ['Coronary Heart Disease', 'Stroke', 'Prediabetes', 'Hypertension']
     xss, yss = make_subset(x_label, y_label, conditions)
     plot(xss, yss, x_label, y_label, conditions) 
-
-
-    
-
-"""only needs to be done once! (redone if patient.json changes)"""
-f, c = make_options()
-write_all_options(f, c)
-
+    plt.show()
 
 if __name__ == '__main__':
     print('want to see an example? (Y/n)')
     s=input()
-    if s=='Y':
+    if s in ['Y', 'y'] :
         example()
     print('Now try your own')
     f,c=read_options()
@@ -162,7 +162,7 @@ if __name__ == '__main__':
             cnds.append(s)
             print('would you like to add any more? (Y/n)')
             s=input()
-            if s != 'Y':
+            if s not in ['Y', 'y'] :
                 break
         else:
             print('not in conditions list')
@@ -172,10 +172,8 @@ if __name__ == '__main__':
     plot(xss, yss, x_label, y_label, cnds)
     print('Would you like to export this dataset? (Y/n) (as y, X = [x, categorically encoded conditions])')
     s=input()
-    if s == 'Y':
+    if s in ['Y', 'y'] :
         print('Give the filename you would like:')
         s=input()
         export_dataset(xss, yss, x_label, y_label, cnds, s)
-
-
-
+    plt.show()
